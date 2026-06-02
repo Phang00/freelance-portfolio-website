@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfoilo — Freelance Portfolio Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #7c6fff;
+    --accent2: #ff6b6b;
+    --accent3: #00e5b0;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ─── CONFIG BANNER ─── */
+  #config-banner {
+    background: linear-gradient(90deg, rgba(124,111,255,0.2), rgba(0,229,176,0.1));
+    border-bottom: 1px solid rgba(124,111,255,0.4);
+    padding: 12px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  #config-banner.hidden { display: none; }
+
+  .config-label { font-size: 13px; color: var(--accent); font-family: 'DM Mono', monospace; }
+
+  .config-inputs { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+
+  .config-inputs input {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(124,111,255,0.4);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    outline: none;
+  }
+
+  .config-inputs input:focus { border-color: var(--accent); }
+
+  /* ─── LOADING SPINNER ─── */
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--white);
+    cursor: pointer;
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #9585ff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,111,255,0.35); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 7px 16px; font-size: 13px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .hero {
+    padding: 100px 48px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 600px;
+    background: radial-gradient(ellipse, rgba(124,111,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(124,111,255,0.1);
+    border: 1px solid rgba(124,111,255,0.3);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 120px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .line2 { color: var(--accent); }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 64px;
+    padding: 48px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 48px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--white); letter-spacing: 2px; }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .section { padding: 64px 48px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; }
+
+  .cat-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 40px; }
+
+  .cat-btn {
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cat-btn:hover, .cat-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .cat-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+
+  .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+
+  .portfolio-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .portfolio-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(124,111,255,0.15); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card-cover { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; overflow: hidden; }
+  .card-body { padding: 20px; }
+  .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+  .card-category {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .card-rating { display: flex; align-items: center; gap: 4px; font-size: 13px; color: #ffd166; font-family: 'DM Mono', monospace; }
+  .card-name { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .card-title { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tag { font-size: 11px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border); }
+  .card-rate { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--accent3); }
+  .card-avail { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .avail-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .avail-dot.open { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+  .avail-dot.busy { background: var(--accent2); }
+
+  .create-page { max-width: 760px; margin: 0 auto; padding: 64px 48px; }
+  .create-page h2 { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 2px; margin-bottom: 8px; }
+  .create-page .subtitle { color: var(--muted); margin-bottom: 48px; font-size: 16px; }
+
+  .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; }
+  .form-section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 24px; font-family: 'DM Mono', monospace; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-row.one { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+  label { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+  input, select, textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+  textarea { resize: vertical; min-height: 120px; }
+
+  .skill-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-height: 56px;
+    cursor: text;
+  }
+
+  .skill-tag {
+    background: rgba(124,111,255,0.15);
+    border: 1px solid rgba(124,111,255,0.4);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .skill-tag .remove { cursor: pointer; opacity: 0.6; font-size: 16px; line-height: 1; }
+  .skill-tag .remove:hover { opacity: 1; }
+
+  .skill-input {
+    border: none;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    font-size: 14px;
+    min-width: 120px;
+    flex: 1;
+    padding: 4px 0;
+  }
+
+  .emoji-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; padding: 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
+
+  .emoji-opt {
+    width: 48px; height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .emoji-opt:hover { background: var(--surface); }
+  .emoji-opt.selected { border-color: var(--accent); background: rgba(124,111,255,0.15); }
+
+  .profile-hero { background: linear-gradient(135deg, rgba(124,111,255,0.1), rgba(0,229,176,0.05)); border-bottom: 1px solid var(--border); padding: 48px; }
+
+  .profile-header { max-width: 900px; margin: 0 auto; display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .profile-avatar { width: 100px; height: 100px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 48px; flex-shrink: 0; border: 2px solid var(--border); }
+  .profile-info { flex: 1; }
+  .profile-name { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; color: var(--white); }
+  .profile-title-text { color: var(--muted); font-size: 16px; margin-bottom: 16px; }
+  .profile-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .profile-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+  .profile-stats { display: flex; gap: 32px; margin-top: 20px; flex-wrap: wrap; }
+  .profile-stat { text-align: left; }
+  .profile-stat-num { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--white); font-weight: 500; }
+  .profile-stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .profile-actions { display: flex; flex-direction: column; gap: 10px; }
+
+  .profile-body { max-width: 900px; margin: 0 auto; padding: 48px; display: grid; grid-template-columns: 1fr 280px; gap: 48px; }
+
+  .section-h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; margin-bottom: 20px; color: var(--white); }
+  .about-text { color: var(--muted); line-height: 1.7; font-size: 15px; margin-bottom: 32px; }
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+  .skill-pill { padding: 6px 16px; border-radius: 100px; font-size: 13px; font-family: 'DM Mono', monospace; border: 1px solid var(--border); color: var(--text); }
+  .work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 12px; }
+  .work-card h4 { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+  .work-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .side-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .side-card-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .rate-display { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--accent3); letter-spacing: 1px; }
+  .rate-sub { font-size: 13px; color: var(--muted); }
+
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 9999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 320px;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  .search-bar { position: relative; max-width: 400px; }
+  .search-bar input { padding-left: 44px; }
+  .search-bar .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+
+  .empty-state { text-align: center; padding: 80px 40px; color: var(--muted); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 20px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; }
+
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); cursor: pointer; font-size: 14px; margin-bottom: 32px; transition: color 0.2s; }
+  .back-btn:hover { color: var(--text); }
+
+  /* DB status indicator */
+  .db-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .db-status.connected { color: var(--accent3); border-color: rgba(0,229,176,0.3); }
+  .db-status.disconnected { color: var(--accent2); border-color: rgba(255,107,107,0.3); }
+  .db-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .db-status.connected .db-dot { box-shadow: 0 0 6px currentColor; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 60px 20px; }
+    .section { padding: 40px 20px; }
+    .stats { margin: 0 20px; gap: 32px; }
+    .create-page { padding: 40px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .profile-hero { padding: 32px 20px; }
+    .profile-body { padding: 32px 20px; grid-template-columns: 1fr; }
+    .nav-links a:not(:last-child) { display: none; }
+    #config-banner { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── SUPABASE CONFIG BANNER ─── -->
+<div id="config-banner">
+  <span class="config-label">⚡ SUPABASE CONFIG</span>
+  <div class="config-inputs">
+    <input type="text" id="cfg-url" placeholder="Project URL: https://xxxx.supabase.co" oninput="saveConfig()">
+    <input type="text" id="cfg-key" placeholder="Anon Key: eyJhbGciOiJIUzI1NiIs..." oninput="saveConfig()">
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="connectSupabase()">Connect DB →</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">PORT<span>FO</span>LIO</div>
+  <div class="nav-links">
+    <a onclick="showPage('home')">Discover</a>
+    <a onclick="showPage('create')">Create Portfolio</a>
+    <span id="db-status-indicator" class="db-status disconnected"><span class="db-dot"></span>No DB</span>
+    <button class="btn btn-primary btn-sm" onclick="showPage('create')">+ Add Yours</button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">✦ Freelancers &amp; Growing</div>
+    <h1>FIND THE<br><span class="line2">PERFECT</span><br>TALENT</h1>
+    <p>Browse portfolios from world-class freelancers across design, development, writing, video, and more.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">Explore Portfolios →</button>
+      <button class="btn btn-outline" onclick="showPage('create')">Create Your Portfolio</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num" id="stat-count">—</div><div class="stat-label">Freelancers</div></div>
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Skill Categories</div></div>
+    <div class="stat-item"><div class="stat-num">$0</div><div class="stat-label">Platform Fee</div></div>
+    <div class="stat-item"><div class="stat-num">Free</div><div class="stat-label">To Join</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Browse Portfolios</div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search name, skill..." id="searchInput" oninput="filterCards()">
+      </div>
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="portfolio-grid" id="portfolioGrid">
+      <div class="loading-state"><span class="spinner"></span>Loading portfolios...</div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE PAGE -->
+<div id="page-create" class="page">
+  <div class="create-page">
+    <div class="back-btn" onclick="showPage('home')">← Back to Discover</div>
+    <h2>BUILD YOUR<br><span style="color:var(--accent)">PORTFOLIO</span></h2>
+    <p class="subtitle">Set up your freelance profile and start getting discovered by clients.</p>
+
+    <div class="form-section">
+      <div class="form-section-title">01 — Basic Info</div>
+      <div class="form-row">
+        <div class="field"><label>Full Name *</label><input type="text" id="fname" placeholder="e.g. Alex Rivera"></div>
+        <div class="field"><label>Professional Title *</label><input type="text" id="ftitle" placeholder="e.g. Senior UI/UX Designer"></div>
+      </div>
+      <div class="form-row one">
+        <div class="field"><label>About You</label><textarea id="fabout" placeholder="Tell clients what makes you unique..."></textarea></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Location</label><input type="text" id="flocation" placeholder="e.g. New York, USA"></div>
+        <div class="field"><label>Hourly Rate (USD)</label><input type="number" id="frate" placeholder="e.g. 75"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">02 — Category</div>
+      <div class="field">
+        <label>Primary Category *</label>
+        <select id="fcat">
+          <option value="">Select your main skill area...</option>
+          <option value="Design">🎨 Design</option>
+          <option value="Development">💻 Development</option>
+          <option value="Writing">✍️ Writing & Content</option>
+          <option value="Video">🎬 Video & Animation</option>
+          <option value="Marketing">📈 Marketing</option>
+          <option value="Music">🎵 Music & Audio</option>
+          <option value="Photography">📷 Photography</option>
+          <option value="Data">📊 Data & Analytics</option>
+          <option value="Business">💼 Business</option>
+          <option value="3D">🧊 3D & Modeling</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">03 — Avatar Emoji</div>
+      <label style="margin-bottom:12px;display:block">Pick an emoji that represents you</label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">04 — Skills</div>
+      <label style="margin-bottom:12px;display:block">Type a skill and press Enter</label>
+      <div class="skill-picker" id="skillPicker" onclick="document.getElementById('skillInputField').focus()">
+        <input class="skill-input" id="skillInputField" placeholder="e.g. React, Figma, Copywriting..." onkeydown="handleSkillInput(event)">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">05 — Availability</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Status</label>
+          <select id="favail">
+            <option value="Open for work">🟢 Open for Work</option>
+            <option value="Busy">🔴 Currently Busy</option>
+            <option value="Part-time only">🟡 Part-time Only</option>
+          </select>
+        </div>
+        <div class="field"><label>Years of Experience</label><input type="number" id="fexp" placeholder="e.g. 5" min="0" max="50"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="publishBtn" style="width:100%;padding:16px;font-size:16px;border-radius:12px;" onclick="createPortfolio()">
+      ✦ Publish My Portfolio
+    </button>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="page-profile" class="page">
+  <div id="profileContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  SUPABASE CONFIG
+// ══════════════════════════════════════════════
+let SUPABASE_URL = '';
+let SUPABASE_KEY = '';
+let isConnected = false;
+
+// Load saved config from localStorage
+function loadConfig() {
+  const url = localStorage.getItem('sb_url') || '';
+  const key = localStorage.getItem('sb_key') || '';
+  if (url) document.getElementById('cfg-url').value = url;
+  if (key) document.getElementById('cfg-key').value = key;
+  if (url && key) {
+    SUPABASE_URL = url;
+    SUPABASE_KEY = key;
+    connectSupabase(true);
+  }
+}
+
+function saveConfig() {
+  const url = document.getElementById('cfg-url').value.trim();
+  const key = document.getElementById('cfg-key').value.trim();
+  localStorage.setItem('sb_url', url);
+  localStorage.setItem('sb_key', key);
+}
+
+async function connectSupabase(silent = false) {
+  const url = document.getElementById('cfg-url').value.trim();
+  const key = document.getElementById('cfg-key').value.trim();
+
+  if (!url || !key) {
+    showToast('⚠️ Enter both Supabase URL and anon key', true);
+    return;
+  }
+
+  SUPABASE_URL = url.replace(/\/$/, '');
+  SUPABASE_KEY = key;
+
+  try {
+    const res = await sbFetch('portfolios', { select: 'id', limit: 1 });
+    if (res.error) throw new Error(res.error.message);
+
+    isConnected = true;
+    document.getElementById('config-banner').classList.add('hidden');
+    updateDbStatus(true);
+    if (!silent) showToast('✅ Connected to Supabase!');
+    await loadPortfolios();
+  } catch (err) {
+    isConnected = false;
+    updateDbStatus(false);
+    showToast('❌ Connection failed: ' + err.message, true);
+    // Fall back to demo data
+    loadDemoData();
+  }
+}
+
+function updateDbStatus(connected) {
+  const el = document.getElementById('db-status-indicator');
+  el.className = 'db-status ' + (connected ? 'connected' : 'disconnected');
+  el.innerHTML = `<span class="db-dot"></span>${connected ? 'Supabase ✓' : 'Demo Mode'}`;
+}
+
+// ══════════════════════════════════════════════
+//  SUPABASE API HELPERS
+// ══════════════════════════════════════════════
+async function sbFetch(table, opts = {}) {
+  const { select = '*', filter = '', limit = 1000, order = 'created_at.desc' } = opts;
+  let url = `${SUPABASE_URL}/rest/v1/${table}?select=${select}&order=${order}&limit=${limit}`;
+  if (filter) url += '&' + filter;
+
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    return { data: null, error: err };
+  }
+
+  const data = await res.json();
+  return { data, error: null };
+}
+
+async function sbInsert(table, payload) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    return { data: null, error: err };
+  }
+
+  const data = await res.json();
+  return { data, error: null };
+}
+
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+const EMOJIS = ['👨‍💻','👩‍💻','🎨','✍️','🎬','📸','🎵','📊','🧑‍🎤','🦄','🚀','🧠','🦊','🐉','🌊','⚡','🔥','🌙','💎','🎯','🦋','🌸','🎸','🍄','🏔️','🌿','🎭','🧩'];
+
+const DEMO_DATA = [
+  { id:1, name:'Mia Chen', title:'Brand & Identity Designer', category:'Design', emoji:'🎨', about:'I craft visual identities that tell stories. Specializing in brand systems, logo design, and UI aesthetics.', skills:['Figma','Illustrator','Brand Strategy','Typography','UI Design'], rate:95, exp:7, avail:'Open for work', location:'San Francisco, USA', rating:4.9, projects:34 },
+  { id:2, name:'Liam Torres', title:'Full-Stack Developer', category:'Development', emoji:'👨‍💻', about:'Building scalable web apps with modern stacks. Clean code, thoughtful architecture, and products that just work.', skills:['React','Node.js','PostgreSQL','TypeScript','AWS'], rate:120, exp:6, avail:'Open for work', location:'Berlin, Germany', rating:5.0, projects:28 },
+  { id:3, name:'Zara Ahmed', title:'Content Strategist & Copywriter', category:'Writing', emoji:'✍️', about:'Words that convert. Long-form content, email sequences, and brand copy for SaaS and DTC brands.', skills:['Copywriting','SEO','Email Marketing','Blog Writing','Content Strategy'], rate:65, exp:5, avail:'Busy', location:'London, UK', rating:4.8, projects:52 },
+  { id:4, name:'Kai Nakamura', title:'Motion Designer & Animator', category:'Video', emoji:'🎬', about:'Turning ideas into motion. Explainer videos, brand animations, and social content that stops the scroll.', skills:['After Effects','Cinema 4D','Lottie','Premiere Pro','Blender'], rate:85, exp:4, avail:'Open for work', location:'Tokyo, Japan', rating:4.7, projects:19 },
+  { id:5, name:'Priya Sharma', title:'Growth Marketing Strategist', category:'Marketing', emoji:'📈', about:'Data-driven growth. Helped 30+ startups scale through paid, organic, and viral loops.', skills:['Google Ads','Meta Ads','Analytics','A/B Testing','Funnel Optimization'], rate:110, exp:8, avail:'Part-time only', location:'Mumbai, India', rating:4.9, projects:41 },
+  { id:6, name:'Elias Berg', title:'Data Scientist & ML Engineer', category:'Data', emoji:'📊', about:'Making sense of messy data. ML models, dashboards, and pipelines that turn raw data into insight.', skills:['Python','TensorFlow','SQL','Tableau','Pandas'], rate:130, exp:6, avail:'Open for work', location:'Stockholm, Sweden', rating:4.8, projects:22 },
+];
+
+const CATEGORY_COLORS = {
+  'Design':      { bg:'rgba(124,111,255,0.15)', color:'#7c6fff', border:'rgba(124,111,255,0.4)' },
+  'Development': { bg:'rgba(0,229,176,0.12)',   color:'#00e5b0', border:'rgba(0,229,176,0.3)'   },
+  'Writing':     { bg:'rgba(255,214,102,0.15)', color:'#ffd166', border:'rgba(255,214,102,0.4)' },
+  'Video':       { bg:'rgba(255,107,107,0.15)', color:'#ff6b6b', border:'rgba(255,107,107,0.4)' },
+  'Marketing':   { bg:'rgba(6,214,160,0.15)',   color:'#06d6a0', border:'rgba(6,214,160,0.3)'   },
+  'Music':       { bg:'rgba(239,71,111,0.15)',  color:'#ef476f', border:'rgba(239,71,111,0.3)'  },
+  'Photography': { bg:'rgba(255,177,66,0.15)',  color:'#ffb142', border:'rgba(255,177,66,0.3)'  },
+  'Data':        { bg:'rgba(72,149,239,0.15)',  color:'#4895ef', border:'rgba(72,149,239,0.3)'  },
+  'Business':    { bg:'rgba(147,197,114,0.15)', color:'#93c572', border:'rgba(147,197,114,0.3)' },
+  '3D':          { bg:'rgba(200,100,255,0.15)', color:'#c864ff', border:'rgba(200,100,255,0.3)' },
+};
+
+const CAT_EMOJIS = { 'Design':'🎨','Development':'💻','Writing':'✍️','Video':'🎬','Marketing':'📈','Music':'🎵','Photography':'📷','Data':'📊','Business':'💼','3D':'🧊' };
+
+const COVER_GRADIENTS = {
+  'Design':'linear-gradient(135deg,#1a1232,#2d1b69)',
+  'Development':'linear-gradient(135deg,#0a2a1a,#0d4a2e)',
+  'Writing':'linear-gradient(135deg,#2a2010,#4a3800)',
+  'Video':'linear-gradient(135deg,#2a0f0f,#5a1a1a)',
+  'Marketing':'linear-gradient(135deg,#0a2a20,#0f4a34)',
+  'Music':'linear-gradient(135deg,#2a0f1a,#4a1028)',
+  'Photography':'linear-gradient(135deg,#2a1e08,#4a3412)',
+  'Data':'linear-gradient(135deg,#0a1a2a,#0f2d4a)',
+  'Business':'linear-gradient(135deg,#182a10,#2a4a18)',
+  '3D':'linear-gradient(135deg,#1e0a2a,#3a0f50)',
+};
+
+let portfolios = [];
+let selectedEmoji = EMOJIS[0];
+let userSkills = [];
+let activeCategory = 'All';
+
+// ══════════════════════════════════════════════
+//  LOAD DATA
+// ══════════════════════════════════════════════
+async function loadPortfolios() {
+  const grid = document.getElementById('portfolioGrid');
+  grid.innerHTML = '<div class="loading-state"><span class="spinner"></span>Loading from Supabase...</div>';
+
+  try {
+    const { data, error } = await sbFetch('portfolios');
+    if (error) throw new Error(error.message);
+
+    // Normalize field names (DB uses snake_case)
+    portfolios = data.map(p => ({
+      id: p.id,
+      name: p.name,
+      title: p.title,
+      category: p.category,
+      emoji: p.emoji || '👤',
+      about: p.about || '',
+      skills: Array.isArray(p.skills) ? p.skills : [],
+      rate: p.rate || 0,
+      exp: p.exp || 0,
+      avail: p.avail || 'Open for work',
+      location: p.location || 'Remote',
+      rating: parseFloat(p.rating) || 5.0,
+      projects: p.projects || 0
+    }));
+
+    document.getElementById('stat-count').textContent = portfolios.length.toLocaleString();
+    renderCards();
+  } catch (err) {
+    showToast('⚠️ Could not load data: ' + err.message, true);
+    loadDemoData();
+  }
+}
+
+function loadDemoData() {
+  portfolios = DEMO_DATA;
+  document.getElementById('stat-count').textContent = portfolios.length + ' (demo)';
+  renderCards();
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+function init() {
+  renderEmojiPicker();
+  renderCatFilters();
+  loadConfig();
+  if (!SUPABASE_URL) loadDemoData();
+}
+
+// ══════════════════════════════════════════════
+//  PAGES
+// ══════════════════════════════════════════════
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════
+//  EMOJI PICKER
+// ══════════════════════════════════════════════
+function renderEmojiPicker() {
+  const p = document.getElementById('emojiPicker');
+  p.innerHTML = EMOJIS.map((e, i) =>
+    `<button class="emoji-opt ${i===0?'selected':''}" onclick="selectEmoji(this,'${e}')">${e}</button>`
+  ).join('');
+  selectedEmoji = EMOJIS[0];
+}
+
+function selectEmoji(el, emoji) {
+  document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedEmoji = emoji;
+}
+
+// ══════════════════════════════════════════════
+//  SKILL INPUT
+// ══════════════════════════════════════════════
+function handleSkillInput(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,$/, '');
+    if (val && !userSkills.includes(val)) {
+      userSkills.push(val);
+      renderSkillTags();
+    }
+    e.target.value = '';
+  }
+}
+
+function removeSkill(skill) {
+  userSkills = userSkills.filter(s => s !== skill);
+  renderSkillTags();
+}
+
+function renderSkillTags() {
+  const picker = document.getElementById('skillPicker');
+  const input = document.getElementById('skillInputField');
+  picker.innerHTML = '';
+  userSkills.forEach(s => {
+    const tag = document.createElement('div');
+    tag.className = 'skill-tag';
+    tag.innerHTML = `${s}<span class="remove" onclick="removeSkill('${s}')">×</span>`;
+    picker.appendChild(tag);
+  });
+  picker.appendChild(input);
+}
+
+// ══════════════════════════════════════════════
+//  CATEGORIES
+// ══════════════════════════════════════════════
+function renderCatFilters() {
+  const cats = ['All', ...Object.keys(CAT_EMOJIS)];
+  document.getElementById('catFilters').innerHTML = cats.map(c =>
+    `<button class="cat-btn ${c==='All'?'active':''}" onclick="setCategory('${c}',this)">
+      <span class="cat-dot"></span>${c !== 'All' ? CAT_EMOJIS[c] + ' ' : ''}${c}
+    </button>`
+  ).join('');
+}
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER CARDS
+// ══════════════════════════════════════════════
+function renderCards() {
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let filtered = portfolios;
+
+  if (activeCategory !== 'All') filtered = filtered.filter(p => p.category === activeCategory);
+  if (search) {
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(search) ||
+      p.title.toLowerCase().includes(search) ||
+      (p.skills || []).some(s => s.toLowerCase().includes(search)) ||
+      p.category.toLowerCase().includes(search)
+    );
+  }
+
+  const grid = document.getElementById('portfolioGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="icon">🔭</div><h3>No portfolios found</h3><p>Try a different search or category</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((p, i) => {
+    const cc = CATEGORY_COLORS[p.category] || CATEGORY_COLORS['Design'];
+    const cg = COVER_GRADIENTS[p.category] || COVER_GRADIENTS['Design'];
+    const availOpen = p.avail === 'Open for work';
+    return `
+    <div class="portfolio-card" onclick="showProfile(${p.id})" style="animation-delay:${i*0.06}s">
+      <div class="card-cover" style="background:${cg}">
+        <span style="font-size:64px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.5))">${p.emoji}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-category" style="background:${cc.bg};color:${cc.color};border:1px solid ${cc.border}">
+            ${CAT_EMOJIS[p.category] || ''} ${p.category}
+          </span>
+          <span class="card-rating">★ ${p.rating}</span>
+        </div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-tags">
+          ${(p.skills||[]).slice(0,3).map(s => `<span class="tag">${s}</span>`).join('')}
+          ${(p.skills||[]).length > 3 ? `<span class="tag">+${p.skills.length-3}</span>` : ''}
+        </div>
+        <div class="card-footer">
+          <span class="card-rate">$${p.rate}/hr</span>
+          <span class="card-avail">
+            <span class="avail-dot ${availOpen?'open':'busy'}"></span>
+            ${p.avail}
+          </span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCards() { renderCards(); }
+
+// ══════════════════════════════════════════════
+//  SHOW PROFILE
+// ══════════════════════════════════════════════
+function showProfile(id) {
+  const p = portfolios.find(x => x.id == id);
+  if (!p) return;
+  const cc = CATEGORY_COLORS[p.category] || CATEGORY_COLORS['Design'];
+  const cg = COVER_GRADIENTS[p.category] || COVER_GRADIENTS['Design'];
+  const availOpen = p.avail === 'Open for work';
+
+  document.getElementById('profileContent').innerHTML = `
+  <div class="profile-hero">
+    <div class="profile-header">
+      <div class="profile-avatar" style="background:${cg}">${p.emoji}</div>
+      <div class="profile-info">
+        <div class="profile-name">${p.name}</div>
+        <div class="profile-title-text">${p.title}</div>
+        <div class="profile-badges">
+          <span class="profile-badge" style="background:${cc.bg};border-color:${cc.border};color:${cc.color}">${CAT_EMOJIS[p.category]} ${p.category}</span>
+          <span class="profile-badge">📍 ${p.location}</span>
+          <span class="profile-badge">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${availOpen?'#00e5b0':'#ff6b6b'}"></span>
+            ${p.avail}
+          </span>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat"><div class="profile-stat-num">★ ${p.rating}</div><div class="profile-stat-label">Rating</div></div>
+          <div class="profile-stat"><div class="profile-stat-num">${p.projects}</div><div class="profile-stat-label">Projects</div></div>
+          <div class="profile-stat"><div class="profile-stat-num">${p.exp}yr</div><div class="profile-stat-label">Experience</div></div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-primary" onclick="showToast('Message sent to ${p.name}! 🚀')">Message</button>
+        <button class="btn btn-outline" onclick="showToast('${p.name} saved ♥')">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-main">
+      <div class="back-btn" onclick="showPage('home')">← Back to Discover</div>
+      <h3 class="section-h3">About</h3>
+      <p class="about-text">${p.about || 'No bio provided yet.'}</p>
+      <h3 class="section-h3">Skills</h3>
+      <div class="skills-grid">
+        ${(p.skills||[]).map(s => `<span class="skill-pill" style="border-color:${cc.border};color:${cc.color}">${s}</span>`).join('')}
+      </div>
+      <h3 class="section-h3">Work Samples</h3>
+      ${[1,2,3].map(n => `<div class="work-card"><h4>Project ${n} — ${p.category} Work</h4><p>A sample of professional ${p.category.toLowerCase()} work demonstrating ${(p.skills||[])[0]||''} and ${(p.skills||[])[1]||'creative'} skills.</p></div>`).join('')}
+    </div>
+    <div class="profile-side">
+      <div class="side-card">
+        <div class="side-card-title">Hourly Rate</div>
+        <div class="rate-display">$${p.rate}</div>
+        <div class="rate-sub">per hour · USD</div>
+      </div>
+      <div class="side-card">
+        <div class="side-card-title">Quick Stats</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Response time</span><span>~2 hours</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Job success</span><span>${Math.round(p.rating*20)}%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Total earned</span><span>$${(p.rate*p.projects*8).toLocaleString()}</span></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:14px;border-radius:12px;justify-content:center" onclick="showToast('Hire request sent to ${p.name}! 🎉')">
+        Hire ${p.name.split(' ')[0]}
+      </button>
+    </div>
+  </div>`;
+
+  showPage('profile');
+}
+
+// ══════════════════════════════════════════════
+//  CREATE PORTFOLIO → saves to Supabase
+// ══════════════════════════════════════════════
+async function createPortfolio() {
+  const name  = document.getElementById('fname').value.trim();
+  const title = document.getElementById('ftitle').value.trim();
+  const cat   = document.getElementById('fcat').value;
+  const about = document.getElementById('fabout').value.trim();
+  const rate  = parseInt(document.getElementById('frate').value) || 50;
+  const exp   = parseInt(document.getElementById('fexp').value) || 1;
+  const avail = document.getElementById('favail').value;
+  const loc   = document.getElementById('flocation').value.trim() || 'Remote';
+
+  if (!name || !title || !cat) {
+    showToast('⚠️ Please fill in name, title, and category', true);
+    return;
+  }
+
+  const payload = {
+    name, title, category: cat,
+    emoji: selectedEmoji,
+    about: about || `${title} with ${exp} years of experience.`,
+    skills: userSkills.length ? userSkills : [cat],
+    rate, exp, avail, location: loc,
+    rating: 5.0, projects: 0
+  };
+
+  const btn = document.getElementById('publishBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Publishing...';
+
+  if (isConnected) {
+    // ── Save to Supabase ──
+    const { data, error } = await sbInsert('portfolios', payload);
+    btn.disabled = false;
+    btn.innerHTML = '✦ Publish My Portfolio';
+
+    if (error) {
+      showToast('❌ Save failed: ' + (error.message || JSON.stringify(error)), true);
+      return;
+    }
+
+    const saved = data[0];
+    portfolios.unshift({ ...payload, id: saved.id });
+  } else {
+    // ── Demo mode: just add locally ──
+    await new Promise(r => setTimeout(r, 800)); // simulate delay
+    btn.disabled = false;
+    btn.innerHTML = '✦ Publish My Portfolio';
+    portfolios.unshift({ ...payload, id: Date.now() });
+    showToast('⚠️ Demo mode: connect Supabase to persist data');
+  }
+
+  // Reset form
+  ['fname','ftitle','fabout','flocation','frate','fexp'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fcat').value = '';
+  userSkills = [];
+  renderSkillTags();
+  renderEmojiPicker();
+  document.getElementById('stat-count').textContent = portfolios.length + (isConnected ? '' : ' (demo)');
+  renderCards();
+
+  showPage('home');
+  setTimeout(() => showToast(`🎉 ${name}'s portfolio is live!`), 300);
+}
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderLeftColor = err ? '#ff6b6b' : '#00e5b0';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
