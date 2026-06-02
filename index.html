@@ -550,6 +550,193 @@
 
   .divider { height: 1px; background: var(--border); margin: 24px 0; }
 
+  /* ─── AUTH ─── */
+  .auth-modal .modal { max-width: 440px; }
+  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin: 0 -32px 28px; padding: 0 32px; }
+  .auth-tab {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+  .auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .auth-tab-panel { display: none; }
+  .auth-tab-panel.active { display: block; }
+
+  .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .role-card {
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    background: transparent;
+  }
+  .role-card:hover { border-color: rgba(124,111,255,0.5); background: rgba(124,111,255,0.04); }
+  .role-card.selected { border-color: var(--accent); background: rgba(124,111,255,0.1); }
+  .role-card .role-icon { font-size: 28px; margin-bottom: 8px; }
+  .role-card .role-name { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .role-card .role-desc { font-size: 12px; color: var(--muted); }
+
+  .auth-error { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--accent2); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+  .auth-error.show { display: block; }
+
+  /* ─── USER MENU (nav) ─── */
+  .user-menu-wrap { position: relative; }
+  .user-avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .user-avatar-btn:hover { border-color: var(--accent); background: rgba(124,111,255,0.06); }
+  .user-avatar-circle {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #9585ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+  .user-role-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 100px;
+  }
+  .user-role-pill.freelancer { background: rgba(124,111,255,0.2); color: var(--accent); }
+  .user-role-pill.client { background: rgba(0,229,176,0.15); color: var(--accent3); }
+
+  .user-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 8px;
+    z-index: 200;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    animation: fadeUp 0.15s ease;
+  }
+  .user-menu-wrap:hover .user-dropdown,
+  .user-menu-wrap.open .user-dropdown { display: block; }
+  .dropdown-user-info { padding: 10px 12px 14px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+  .dropdown-user-name { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 2px; }
+  .dropdown-user-email { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dropdown-item:hover { background: var(--surface2); }
+  .dropdown-item.danger { color: var(--accent2); }
+
+  /* ─── CHAT ENHANCEMENTS ─── */
+  .inbox-search {
+    position: relative;
+    padding: 12px 16px 0;
+  }
+  .inbox-search input {
+    padding: 9px 14px 9px 36px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    width: 100%;
+  }
+  .inbox-search-icon { position: absolute; left: 28px; top: 50%; transform: translateY(-30%); color: var(--muted); font-size: 14px; pointer-events: none; }
+  .inbox-actions { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 0; }
+  .inbox-actions span { font-size: 12px; color: var(--muted); }
+  .inbox-clear-btn { font-size: 12px; color: var(--accent2); background: none; border: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-family: 'DM Sans', sans-serif; }
+  .inbox-clear-btn:hover { background: rgba(255,107,107,0.1); }
+
+  .thread-item { position: relative; }
+  .thread-menu-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 1;
+    display: none;
+  }
+  .thread-item:hover .thread-menu-btn { display: block; }
+  .thread-menu-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .thread-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .thread-unread-count {
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    flex-shrink: 0;
+  }
+
+  .chat-typing { display: flex; align-items: center; gap: 8px; padding: 4px 0; color: var(--muted); font-size: 13px; font-style: italic; }
+  .typing-dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typingBounce 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce { 0%,80%,100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-6px); opacity: 1; } }
+
+  .chat-date-divider { text-align: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; position: relative; }
+  .chat-date-divider::before, .chat-date-divider::after { content: ''; position: absolute; top: 50%; width: 30%; height: 1px; background: var(--border); }
+  .chat-date-divider::before { left: 0; }
+  .chat-date-divider::after { right: 0; }
+
   @media (max-width: 768px) {
     nav { padding: 16px 20px; }
     .nav-link span.nav-label { display: none; }
@@ -587,7 +774,8 @@
       <span class="nav-badge hidden" id="msg-badge">0</span>
     </a>
     <span id="db-status-indicator" class="db-status disconnected"><span class="db-dot"></span>No DB</span>
-    <button class="btn btn-primary btn-sm" onclick="showPage('create')">+ Add Yours</button>
+    <!-- Auth area — rendered by JS -->
+    <div id="nav-auth-area"></div>
   </div>
 </nav>
 
@@ -767,6 +955,14 @@
         <h3>Messages</h3>
         <div class="sub" id="inboxSub">No conversations yet</div>
       </div>
+      <div class="inbox-search">
+        <span class="inbox-search-icon">🔍</span>
+        <input type="text" id="inboxSearch" placeholder="Search conversations…" oninput="renderInbox()">
+      </div>
+      <div class="inbox-actions">
+        <span id="inboxCount"></span>
+        <button class="inbox-clear-btn" onclick="clearAllChats()">Clear all</button>
+      </div>
       <div id="threadList"></div>
     </div>
     <div class="chat-panel" id="chatPanel">
@@ -783,7 +979,7 @@
           </div>
           <div class="chat-header-actions">
             <button class="btn btn-outline btn-sm" id="chatViewProfileBtn">View Profile</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteChatThread()">Delete</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteThread(activeChatId)">🗑 Delete</button>
           </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
@@ -795,6 +991,55 @@
             <button class="chat-send-btn" onclick="sendMessage()">➤</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── AUTH MODAL ─── -->
+<div class="modal-overlay auth-modal" id="authModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h3 id="authModalTitle">WELCOME BACK</h3>
+      <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+      <div class="auth-error" id="authError"></div>
+
+      <!-- LOGIN -->
+      <div class="auth-tab-panel active" id="panel-login">
+        <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:8px" onclick="doLogin()" id="loginBtn">Log In</button>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">Don't have an account? <a onclick="switchAuthTab('signup')" style="color:var(--accent);cursor:pointer">Sign up free</a></p>
+      </div>
+
+      <!-- SIGN UP -->
+      <div class="auth-tab-panel" id="panel-signup">
+        <div class="field" style="margin-bottom:20px">
+          <label style="margin-bottom:12px;display:block">I am a…</label>
+          <div class="role-selector">
+            <div class="role-card selected" id="role-freelancer" onclick="selectRole('freelancer')">
+              <div class="role-icon">🧑‍💻</div>
+              <div class="role-name">Freelancer</div>
+              <div class="role-desc">Post my portfolio &amp; get hired</div>
+            </div>
+            <div class="role-card" id="role-client" onclick="selectRole('client')">
+              <div class="role-icon">🏢</div>
+              <div class="role-name">Client</div>
+              <div class="role-desc">Hire talent for my projects</div>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label>Full Name</label><input type="text" id="signup-name" placeholder="Alex Rivera"></div>
+        <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com"></div>
+        <div class="field"><label>Password</label><input type="password" id="signup-password" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter')doSignup()"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:8px" onclick="doSignup()" id="signupBtn">Create Account</button>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">Already have an account? <a onclick="switchAuthTab('login')" style="color:var(--accent);cursor:pointer">Log in</a></p>
       </div>
     </div>
   </div>
@@ -879,8 +1124,8 @@
 // ══════════════════════════════════════════════
 //  SUPABASE
 // ══════════════════════════════════════════════
-let SUPABASE_URL = 'https://uqoqutuohbermfalruhu.supabase.co';
-let SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3F1dHVvaGJlcm1mYWxydWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDM5NTMsImV4cCI6MjA5NTk3OTk1M30.JbQmCm_pQS2CqhNTep3AoQ94G8GaupOPBpLVj2ZVPwQ';
+const SUPABASE_URL = 'https://uqoqutuohbermfalruhu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3F1dHVvaGJlcm1mYWxydWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDM5NTMsImV4cCI6MjA5NTk3OTk1M30.JbQmCm_pQS2CqhNTep3AoQ94G8GaupOPBpLVj2ZVPwQ';
 let isConnected = false;
 
 async function connectSupabase() {
@@ -903,11 +1148,16 @@ function updateDbStatus(connected) {
   el.innerHTML = `<span class="db-dot"></span>${connected ? 'Supabase ✓' : 'Demo Mode'}`;
 }
 
+function authHeaders() {
+  const token = currentUser?.access_token || SUPABASE_KEY;
+  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+}
+
 async function sbFetch(table, opts = {}) {
   const { select = '*', filter = '', limit = 1000, order = 'created_at.desc' } = opts;
   let url = `${SUPABASE_URL}/rest/v1/${table}?select=${select}&order=${order}&limit=${limit}`;
   if (filter) url += '&' + filter;
-  const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' } });
+  const res = await fetch(url, { headers: authHeaders() });
   if (!res.ok) return { data: null, error: await res.json() };
   return { data: await res.json(), error: null };
 }
@@ -915,11 +1165,193 @@ async function sbFetch(table, opts = {}) {
 async function sbInsert(table, payload) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+    headers: { ...authHeaders(), 'Prefer': 'return=representation' },
     body: JSON.stringify(payload)
   });
   if (!res.ok) return { data: null, error: await res.json() };
   return { data: await res.json(), error: null };
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+let currentUser = null; // { id, email, name, role, access_token }
+let selectedRole = 'freelancer';
+
+function loadSession() {
+  const saved = localStorage.getItem('auth_session');
+  if (saved) {
+    try { currentUser = JSON.parse(saved); } catch(e) {}
+  }
+}
+
+function saveSession(user) {
+  currentUser = user;
+  localStorage.setItem('auth_session', JSON.stringify(user));
+}
+
+function clearSession() {
+  currentUser = null;
+  localStorage.removeItem('auth_session');
+}
+
+function renderNavAuth() {
+  const area = document.getElementById('nav-auth-area');
+  if (!currentUser) {
+    area.innerHTML = `
+      <button class="btn btn-outline btn-sm" onclick="openModal('authModal');switchAuthTab('login')">Log In</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('authModal');switchAuthTab('signup')">Sign Up</button>`;
+  } else {
+    const initials = (currentUser.name || currentUser.email || '?').slice(0,2).toUpperCase();
+    const photo = localStorage.getItem('my_avatar') || '';
+    const avatarContent = photo ? `<img src="${photo}" alt="">` : initials;
+    area.innerHTML = `
+      <div class="user-menu-wrap" onclick="this.classList.toggle('open')">
+        <button class="user-avatar-btn">
+          <div class="user-avatar-circle">${avatarContent}</div>
+          <span>${currentUser.name || currentUser.email.split('@')[0]}</span>
+          <span class="user-role-pill ${currentUser.role}">${currentUser.role}</span>
+          <span style="color:var(--muted);font-size:10px">▾</span>
+        </button>
+        <div class="user-dropdown">
+          <div class="dropdown-user-info">
+            <div class="dropdown-user-name">${currentUser.name || 'User'}</div>
+            <div class="dropdown-user-email">${currentUser.email}</div>
+          </div>
+          ${currentUser.role === 'freelancer' ? `<button class="dropdown-item" onclick="goToMyProfile()">🧑‍💻 My Portfolio</button>` : ''}
+          <button class="dropdown-item" onclick="showPage('saved')">♥ Saved Freelancers</button>
+          <button class="dropdown-item" onclick="showPage('messages')">💬 Messages</button>
+          ${currentUser.role === 'freelancer' ? `<button class="dropdown-item" onclick="showPage('create')">+ Create Portfolio</button>` : ''}
+          <div style="height:1px;background:var(--border);margin:6px 0"></div>
+          <button class="dropdown-item danger" onclick="doLogout()">↩ Log Out</button>
+        </div>
+      </div>
+      ${currentUser.role === 'freelancer' ? `<button class="btn btn-primary btn-sm" onclick="showPage('create')">+ Add Yours</button>` : ''}`;
+  }
+  // Close dropdown when clicking outside
+  document.addEventListener('click', e => {
+    document.querySelectorAll('.user-menu-wrap.open').forEach(el => {
+      if (!el.contains(e.target)) el.classList.remove('open');
+    });
+  }, { once: false });
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('authModalTitle').textContent = tab === 'login' ? 'WELCOME BACK' : 'JOIN PORTFOLIO';
+  document.getElementById('authError').classList.remove('show');
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-freelancer').classList.toggle('selected', role === 'freelancer');
+  document.getElementById('role-client').classList.toggle('selected', role === 'client');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Logging in…';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Login failed');
+
+    const user = {
+      id: data.user.id,
+      email: data.user.email,
+      name: data.user.user_metadata?.name || '',
+      role: data.user.user_metadata?.role || 'client',
+      access_token: data.access_token,
+      refresh_token: data.refresh_token
+    };
+    saveSession(user);
+    closeModal('authModal');
+    renderNavAuth();
+    showToast(`👋 Welcome back, ${user.name || user.email.split('@')[0]}!`);
+  } catch (err) {
+    showAuthError(err.message);
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Log In';
+  }
+}
+
+async function doSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  if (!name || !email || !password) { showAuthError('Please fill in all fields.'); return; }
+  if (password.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
+
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Creating account…';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, data: { name, role: selectedRole } })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Signup failed');
+
+    // Auto-login after signup (if email confirmation is disabled in Supabase)
+    if (data.access_token) {
+      const user = { id: data.user.id, email, name, role: selectedRole, access_token: data.access_token, refresh_token: data.refresh_token };
+      saveSession(user);
+      closeModal('authModal');
+      renderNavAuth();
+      showToast(`🎉 Account created! Welcome, ${name}!`);
+    } else {
+      // Email confirmation required
+      switchAuthTab('login');
+      showToast('✉️ Check your email to confirm your account, then log in.');
+    }
+  } catch (err) {
+    showAuthError(err.message);
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Create Account';
+  }
+}
+
+async function doLogout() {
+  if (currentUser?.access_token) {
+    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + currentUser.access_token }
+    }).catch(() => {});
+  }
+  clearSession();
+  renderNavAuth();
+  showToast('You have been logged out.');
+  showPage('home');
+}
+
+function goToMyProfile() {
+  const myId = localStorage.getItem('my_profile_id');
+  if (myId) {
+    const p = portfolios.find(x => String(x.id) === myId);
+    if (p) { showProfile(p.id); return; }
+  }
+  showPage('create');
+  showToast('Create your portfolio first!');
 }
 
 // ══════════════════════════════════════════════
@@ -1055,15 +1487,23 @@ function updateMsgBadge() {
 }
 
 function openChat(profileId) {
+  if (!currentUser) {
+    openModal('authModal'); switchAuthTab('login');
+    showToast('⚠️ Please log in to send messages');
+    return;
+  }
   profileId = String(profileId);
   const p = portfolios.find(x => String(x.id) === profileId);
   if (!p) return;
 
-  // Create conversation if needed
   if (!conversations[profileId]) {
-    conversations[profileId] = { name: p.name, title: p.title, emoji: p.emoji, messages: [] };
+    conversations[profileId] = { name: p.name, title: p.title, emoji: p.emoji, messages: [], unread: 0 };
     saveConversations();
   }
+
+  // Mark as read when opening
+  conversations[profileId].unread = 0;
+  saveConversations();
 
   showPage('messages');
   activeChatId = profileId;
@@ -1073,14 +1513,30 @@ function openChat(profileId) {
 
 function renderInbox() {
   const list = document.getElementById('threadList');
-  const keys = Object.keys(conversations);
-  document.getElementById('inboxSub').textContent = keys.length
-    ? `${keys.length} conversation${keys.length > 1 ? 's' : ''}`
+  const searchEl = document.getElementById('inboxSearch');
+  const query = (searchEl ? searchEl.value : '').toLowerCase();
+  let keys = Object.keys(conversations);
+
+  // Filter by search
+  if (query) {
+    keys = keys.filter(id => {
+      const conv = conversations[id];
+      const nameMatch = conv.name.toLowerCase().includes(query);
+      const msgMatch = (conv.messages || []).some(m => m.text.toLowerCase().includes(query));
+      return nameMatch || msgMatch;
+    });
+  }
+
+  const total = Object.keys(conversations).length;
+  const countEl = document.getElementById('inboxCount');
+  if (countEl) countEl.textContent = total ? `${total} conversation${total > 1 ? 's' : ''}` : '';
+  document.getElementById('inboxSub').textContent = total
+    ? `${total} conversation${total > 1 ? 's' : ''}`
     : 'No conversations yet';
 
   if (keys.length === 0) {
     list.innerHTML = `<div style="padding:32px 20px;text-align:center;color:var(--muted);font-size:13px">
-      Start a conversation from any freelancer's profile
+      ${query ? 'No results for "' + escapeHtml(query) + '"' : 'Start a conversation from any freelancer\'s profile'}
     </div>`;
     return;
   }
@@ -1090,26 +1546,89 @@ function renderInbox() {
     const msgs = conv.messages || [];
     const last = msgs[msgs.length - 1];
     const photo = localStorage.getItem('profile_photo_' + id);
-    const avatarHtml = photo
-      ? `<img src="${photo}" alt="">`
-      : `<span>${conv.emoji || '👤'}</span>`;
-    const preview = last ? (last.from === 'me' ? 'You: ' : '') + last.text : 'No messages yet';
+    const avatarHtml = photo ? `<img src="${photo}" alt="">` : `<span>${conv.emoji || '👤'}</span>`;
+    const preview = last ? (last.from === 'me' ? 'You: ' : '') + last.text : 'Say hello!';
     const time = last ? formatTime(last.ts) : '';
     const p = portfolios.find(x => String(x.id) === id);
     const cg = p ? (COVER_GRADIENTS[p.category] || COVER_GRADIENTS['Design']) : 'linear-gradient(135deg,#1a1232,#2d1b69)';
-    return `<div class="thread-item ${activeChatId === id ? 'active' : ''}" onclick="selectThread('${id}')">
+    const unread = conv.unread || 0;
+    const isActive = activeChatId === id;
+
+    return `<div class="thread-item ${isActive ? 'active' : ''}" onclick="selectThread('${id}')">
       <div class="thread-avatar" style="background:${photo ? '' : cg}">${avatarHtml}</div>
       <div class="thread-info">
-        <div class="thread-name">${conv.name}</div>
-        <div class="thread-preview">${escapeHtml(preview)}</div>
+        <div class="thread-name" style="${unread > 0 ? 'color:var(--white);font-weight:700' : ''}">${conv.name}</div>
+        <div class="thread-preview" style="${unread > 0 ? 'color:var(--text)' : ''}">${escapeHtml(preview)}</div>
       </div>
-      <div class="thread-time">${time}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <div class="thread-time">${time}</div>
+        ${unread > 0 ? `<span class="thread-unread-count">${unread}</span>` : ''}
+      </div>
+      <button class="thread-menu-btn" onclick="showThreadMenu(event,'${id}')">⋯</button>
     </div>`;
   }).join('');
 }
 
+function showThreadMenu(event, id) {
+  event.stopPropagation();
+  const conv = conversations[id];
+  const unread = conv?.unread || 0;
+
+  // Simple inline menu using a floating div
+  document.querySelectorAll('.thread-context-menu').forEach(el => el.remove());
+
+  const menu = document.createElement('div');
+  menu.className = 'thread-context-menu';
+  menu.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px;z-index:300;box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:160px;';
+  menu.innerHTML = `
+    <button class="dropdown-item" onclick="selectThread('${id}');document.querySelectorAll('.thread-context-menu').forEach(e=>e.remove())">💬 Open</button>
+    <button class="dropdown-item" onclick="toggleReadStatus('${id}');document.querySelectorAll('.thread-context-menu').forEach(e=>e.remove())">${unread > 0 ? '✓ Mark as Read' : '● Mark Unread'}</button>
+    <button class="dropdown-item danger" onclick="deleteThread('${id}');document.querySelectorAll('.thread-context-menu').forEach(e=>e.remove())">🗑 Delete</button>`;
+
+  document.body.appendChild(menu);
+  const rect = event.target.getBoundingClientRect();
+  menu.style.top = rect.bottom + 4 + 'px';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+
+  setTimeout(() => document.addEventListener('click', () => menu.remove(), { once: true }), 0);
+}
+
+function toggleReadStatus(id) {
+  if (!conversations[id]) return;
+  conversations[id].unread = conversations[id].unread > 0 ? 0 : 1;
+  saveConversations();
+  renderInbox();
+}
+
+function deleteThread(id) {
+  const name = conversations[id]?.name;
+  delete conversations[id];
+  if (activeChatId === id) {
+    activeChatId = null;
+    document.getElementById('chatNoSelect').style.display = '';
+    document.getElementById('chatView').style.display = 'none';
+  }
+  saveConversations();
+  renderInbox();
+  showToast(`Conversation with ${name} deleted`);
+}
+
+function clearAllChats() {
+  if (!Object.keys(conversations).length) return;
+  if (!confirm('Clear all chat history? This cannot be undone.')) return;
+  conversations = {};
+  activeChatId = null;
+  document.getElementById('chatNoSelect').style.display = '';
+  document.getElementById('chatView').style.display = 'none';
+  saveConversations();
+  renderInbox();
+  showToast('All conversations cleared');
+}
+
 function selectThread(id) {
   activeChatId = id;
+  if (conversations[id]) conversations[id].unread = 0;
+  saveConversations();
   renderInbox();
   renderChatThread(id);
 }
@@ -1139,10 +1658,18 @@ function renderChatThread(profileId) {
       <p>Say hello to ${conv.name}!</p>
     </div>`;
   } else {
-    // Group consecutive messages from same sender
     let html = '';
     let i = 0;
+    let lastDateLabel = '';
     while (i < msgs.length) {
+      // Date divider
+      const msgDate = new Date(msgs[i].ts);
+      const dateLabel = msgDate.toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' });
+      if (dateLabel !== lastDateLabel) {
+        html += `<div class="chat-date-divider">${dateLabel}</div>`;
+        lastDateLabel = dateLabel;
+      }
+
       const from = msgs[i].from;
       let bubbles = '';
       while (i < msgs.length && msgs[i].from === from) {
@@ -1150,12 +1677,13 @@ function renderChatThread(profileId) {
         i++;
       }
       const ts = msgs[i-1].ts;
+      const myAvatar = localStorage.getItem('my_avatar');
       const avatarHtml = from === 'me'
-        ? (localStorage.getItem('my_avatar') ? `<img src="${localStorage.getItem('my_avatar')}" alt="">` : '🙂')
+        ? (myAvatar ? `<img src="${myAvatar}" alt="">` : (currentUser?.name?.slice(0,1) || '🙂'))
         : (photo ? `<img src="${photo}" alt="">` : (conv.emoji || '👤'));
-      const avatarBg = from === 'me' ? '' : cg;
+      const avatarBg = from === 'me' ? 'background:linear-gradient(135deg,var(--accent),#9585ff)' : (photo ? '' : `background:${cg}`);
       html += `<div class="msg-group ${from === 'me' ? 'mine' : ''}">
-        <div class="msg-group-avatar" style="background:${avatarBg}">${avatarHtml}</div>
+        <div class="msg-group-avatar" style="${avatarBg}">${avatarHtml}</div>
         <div class="msg-bubbles">${bubbles}<div class="msg-time">${formatTime(ts)}</div></div>
       </div>`;
     }
@@ -1183,25 +1711,46 @@ function sendMessage() {
   renderChatThread(activeChatId);
   renderInbox();
 
-  // Simulate a reply after a short delay
-  const conv = conversations[activeChatId];
+  // Show typing indicator
+  const msgsEl = document.getElementById('chatMessages');
+  const typingId = 'typing-' + Date.now();
+  if (msgsEl) {
+    const typingEl = document.createElement('div');
+    typingEl.id = typingId;
+    typingEl.className = 'msg-group';
+    typingEl.innerHTML = `<div class="msg-group-avatar" style="background:${COVER_GRADIENTS[portfolios.find(x=>String(x.id)===activeChatId)?.category]||''}">
+      ${conversations[activeChatId]?.emoji || '👤'}</div>
+      <div class="msg-bubbles"><div class="bubble theirs" style="padding:10px 16px">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div></div>`;
+    msgsEl.appendChild(typingEl);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+
+  // Simulate reply
+  const capturedId = activeChatId;
   const replies = [
-    `Thanks for reaching out! I'd love to discuss your project.`,
-    `That sounds interesting! Can you tell me more about the timeline?`,
-    `I'm available for a call this week if you'd like to connect.`,
-    `Happy to help! Let me review and get back to you shortly.`,
-    `Great, I've worked on similar projects before. What's the budget?`,
+    "Thanks for reaching out! I'd love to discuss your project.",
+    "That sounds interesting! Can you tell me more about the timeline?",
+    "I'm available for a call this week if you'd like to connect.",
+    "Happy to help! Let me review and get back to you shortly.",
+    "Great, I've worked on similar projects before. What's the budget?",
+    "Sure! I can start as early as next week.",
+    'Could you share more details about the scope?',
   ];
   setTimeout(() => {
-    if (!conversations[activeChatId]) return;
+    document.getElementById(typingId)?.remove();
+    if (!conversations[capturedId]) return;
     const reply = replies[Math.floor(Math.random() * replies.length)];
-    conversations[activeChatId].messages.push({ from: 'them', text: reply, ts: Date.now() });
-    saveConversations();
-    if (activeChatId === activeChatId) {
-      renderChatThread(activeChatId);
-      renderInbox();
+    conversations[capturedId].messages.push({ from: 'them', text: reply, ts: Date.now() });
+    // If this chat isn't active, increment unread
+    if (activeChatId !== capturedId) {
+      conversations[capturedId].unread = (conversations[capturedId].unread || 0) + 1;
     }
-  }, 1200 + Math.random() * 800);
+    saveConversations();
+    if (activeChatId === capturedId) renderChatThread(capturedId);
+    renderInbox();
+  }, 1400 + Math.random() * 800);
 }
 
 function handleChatKey(e) {
@@ -1211,17 +1760,6 @@ function handleChatKey(e) {
   }
 }
 
-function deleteChatThread() {
-  if (!activeChatId) return;
-  const name = conversations[activeChatId]?.name;
-  delete conversations[activeChatId];
-  saveConversations();
-  activeChatId = null;
-  document.getElementById('chatNoSelect').style.display = '';
-  document.getElementById('chatView').style.display = 'none';
-  renderInbox();
-  showToast(`Conversation with ${name} deleted`);
-}
 
 function formatTime(ts) {
   const d = new Date(ts);
@@ -1377,11 +1915,13 @@ function loadDemoData() {
 //  INIT
 // ══════════════════════════════════════════════
 function init() {
+  loadSession();
   renderEmojiPicker();
   renderSamplesGrid('samplesUploadGrid', uploadedSamples, 'sampleFileInput', 'removeCreateSample', 'removeCreateSample');
   updateSavedBadge();
   updateMsgBadge();
-  connectSupabase(); // auto-connect with hardcoded credentials; falls back to demo on failure
+  renderNavAuth();
+  connectSupabase();
 }
 
 // ══════════════════════════════════════════════
@@ -1390,16 +1930,34 @@ function init() {
 const PAGE_NAV_MAP = { home: 'nav-home', saved: 'nav-saved', messages: 'nav-messages' };
 
 function showPage(page) {
+  // Guard: create page requires login as freelancer
+  if (page === 'create') {
+    if (!currentUser) {
+      openModal('authModal'); switchAuthTab('signup');
+      showToast('⚠️ Please log in or sign up to create a portfolio');
+      return;
+    }
+    if (currentUser.role !== 'freelancer') {
+      showToast('⚠️ Only freelancers can create portfolios');
+      return;
+    }
+  }
+  // Guard: messages page requires login
+  if (page === 'messages' && !currentUser) {
+    openModal('authModal'); switchAuthTab('login');
+    showToast('⚠️ Please log in to view messages');
+    return;
+  }
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Update nav active states
   document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
   if (PAGE_NAV_MAP[page]) document.getElementById(PAGE_NAV_MAP[page])?.classList.add('active');
 
   if (page === 'saved') renderSavedPage();
-  if (page === 'messages') { renderInbox(); }
+  if (page === 'messages') renderInbox();
 }
 
 // ══════════════════════════════════════════════
@@ -1614,7 +2172,9 @@ function showProfile(id) {
   const availOpen = p.avail === 'Open for work';
   const isSaved = savedProfiles.has(String(p.id));
   const photo = localStorage.getItem('profile_photo_' + p.id);
-  const isMyProfile = localStorage.getItem('my_profile_id') === String(p.id);
+  // Ownership: match by Supabase user_id or fallback to localStorage my_profile_id
+  const isMyProfile = (currentUser && p.user_id && p.user_id === currentUser.id)
+    || localStorage.getItem('my_profile_id') === String(p.id);
 
   // Avatar
   const avatarHtml = photo
@@ -1838,7 +2398,8 @@ async function createPortfolio() {
     about: about || `${title} with ${exp} years of experience.`,
     skills: userSkills.length ? userSkills : [cat],
     rate, exp, avail, location: loc,
-    rating: 5.0, projects: 0
+    rating: 5.0, projects: 0,
+    user_id: currentUser?.id || null
   };
 
   const btn = document.getElementById('publishBtn');
