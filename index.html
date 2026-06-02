@@ -40,38 +40,7 @@
     opacity: 0.4;
   }
 
-  /* ─── CONFIG BANNER ─── */
-  #config-banner {
-    background: linear-gradient(90deg, rgba(124,111,255,0.2), rgba(0,229,176,0.1));
-    border-bottom: 1px solid rgba(124,111,255,0.4);
-    padding: 12px 48px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
 
-  #config-banner.hidden { display: none; }
-
-  .config-label { font-size: 13px; color: var(--accent); font-family: 'DM Mono', monospace; }
-
-  .config-inputs { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
-
-  .config-inputs input {
-    flex: 1;
-    min-width: 200px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(124,111,255,0.4);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    outline: none;
-  }
-
-  .config-inputs input:focus { border-color: var(--accent); }
 
   /* ─── LOADING SPINNER ─── */
   .spinner {
@@ -452,21 +421,11 @@
     .profile-hero { padding: 32px 20px; }
     .profile-body { padding: 32px 20px; grid-template-columns: 1fr; }
     .nav-links a:not(:last-child) { display: none; }
-    #config-banner { padding: 12px 20px; }
+
   }
 </style>
 </head>
 <body>
-
-<!-- ─── SUPABASE CONFIG BANNER ─── -->
-<div id="config-banner">
-  <span class="config-label">⚡ SUPABASE CONFIG</span>
-  <div class="config-inputs">
-    <input type="text" id="cfg-url" placeholder="Project URL: https://xxxx.supabase.co" oninput="saveConfig()">
-    <input type="text" id="cfg-key" placeholder="Anon Key: eyJhbGciOiJIUzI1NiIs..." oninput="saveConfig()">
-  </div>
-  <button class="btn btn-primary btn-sm" onclick="connectSupabase()">Connect DB →</button>
-</div>
 
 <!-- NAV -->
 <nav>
@@ -606,52 +565,16 @@ const SUPABASE_URL = 'https://uqoqutuohbermfalruhu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3F1dHVvaGJlcm1mYWxydWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDM5NTMsImV4cCI6MjA5NTk3OTk1M30.JbQmCm_pQS2CqhNTep3AoQ94G8GaupOPBpLVj2ZVPwQ';
 let isConnected = false;
 
-// Load saved config from localStorage
-function loadConfig() {
-  const url = localStorage.getItem('sb_url') || '';
-  const key = localStorage.getItem('sb_key') || '';
-  if (url) document.getElementById('cfg-url').value = url;
-  if (key) document.getElementById('cfg-key').value = key;
-  if (url && key) {
-    SUPABASE_URL = url;
-    SUPABASE_KEY = key;
-    connectSupabase(true);
-  }
-}
-
-function saveConfig() {
-  const url = document.getElementById('cfg-url').value.trim();
-  const key = document.getElementById('cfg-key').value.trim();
-  localStorage.setItem('sb_url', url);
-  localStorage.setItem('sb_key', key);
-}
-
-async function connectSupabase(silent = false) {
-  const url = document.getElementById('cfg-url').value.trim();
-  const key = document.getElementById('cfg-key').value.trim();
-
-  if (!url || !key) {
-    showToast('⚠️ Enter both Supabase URL and anon key', true);
-    return;
-  }
-
-  SUPABASE_URL = url.replace(/\/$/, '');
-  SUPABASE_KEY = key;
-
+async function autoConnect() {
   try {
     const res = await sbFetch('portfolios', { select: 'id', limit: 1 });
     if (res.error) throw new Error(res.error.message);
-
     isConnected = true;
-    document.getElementById('config-banner').classList.add('hidden');
     updateDbStatus(true);
-    if (!silent) showToast('✅ Connected to Supabase!');
     await loadPortfolios();
   } catch (err) {
     isConnected = false;
     updateDbStatus(false);
-    showToast('❌ Connection failed: ' + err.message, true);
-    // Fall back to demo data
     loadDemoData();
   }
 }
@@ -803,8 +726,7 @@ function loadDemoData() {
 function init() {
   renderEmojiPicker();
   renderCatFilters();
-  loadConfig();
-  if (!SUPABASE_URL) loadDemoData();
+  autoConnect();
 }
 
 // ══════════════════════════════════════════════
